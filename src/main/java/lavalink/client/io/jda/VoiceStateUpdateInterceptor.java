@@ -20,8 +20,7 @@ public class VoiceStateUpdateInterceptor extends VoiceStateUpdateHandler {
     @Override
     protected Long handleInternally(JSONObject content) {
         final Long guildId = content.has("guild_id") ? content.getLong("guild_id") : null;
-//        if (guildId != null && api.getGuildLock().isLocked(guildId))
-        if (guildId != null && !api.getGuildMap().containsKey(guildId))
+        if (guildId != null && api.getGuildSetupController().isLocked(guildId))
             return guildId;
         if (guildId == null)
             return super.handleInternally(content);
