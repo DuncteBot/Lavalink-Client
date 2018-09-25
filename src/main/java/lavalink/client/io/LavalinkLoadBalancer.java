@@ -53,16 +53,17 @@ public class LavalinkLoadBalancer {
 
         List<LavalinkSocket> nodes = lavalink.getNodes();
         for (LavalinkSocket socket : nodes) {
+            int total = getPenalties(socket, guildId, penaltyProviders).getTotal();
 
             Optional<Region> optionalRegion = socket.getRegion().getJDARegions().stream()
                     .filter(r -> r == guildRegion).findFirst();
 
             if(optionalRegion.isPresent()) {
                 leastPenalty = socket;
+                record = total;
                 continue;
             }
 
-            int total = getPenalties(socket, guildId, penaltyProviders).getTotal();
             if (total < record) {
                 leastPenalty = socket;
                 record = total;
