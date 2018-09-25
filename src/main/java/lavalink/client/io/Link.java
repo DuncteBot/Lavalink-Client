@@ -127,7 +127,9 @@ abstract public class Link {
     }
 
     protected abstract void removeConnection();
+
     protected abstract void queueAudioDisconnect();
+
     protected abstract void queueAudioConnect(long channelId);
 
     /**

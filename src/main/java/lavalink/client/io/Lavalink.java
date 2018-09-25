@@ -64,7 +64,11 @@ public abstract class Lavalink<T extends Link> {
     private static final AtomicInteger nodeCounter = new AtomicInteger(0);
 
     public void addNode(@NonNull URI serverUri, @NonNull String password) {
-        addNode("Lavalink_Node_#" + nodeCounter.getAndIncrement(), serverUri, password);
+        addNode("Lavalink_Node_#" + nodeCounter.getAndIncrement(), serverUri, password, LavalinkRegion.DEFAULT);
+    }
+
+    public void addNode(@NonNull URI serverUri, @NonNull String password, LavalinkRegion region) {
+        addNode("Lavalink_Node_#" + nodeCounter.getAndIncrement(), serverUri, password, region);
     }
 
     /**
@@ -74,15 +78,17 @@ public abstract class Lavalink<T extends Link> {
      *         uri of the node to be added
      * @param password
      *         password of the node to be added
+     * @param region
+     *          The region that this server is in
      */
     @SuppressWarnings("WeakerAccess")
-    public void addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password) {
+    public void addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password, LavalinkRegion region) {
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", password);
         headers.put("Num-Shards", Integer.toString(numShards));
         headers.put("User-Id", userId);
 
-        LavalinkSocket socket = new LavalinkSocket(name, this, serverUri, new Draft_6455(), headers);
+        LavalinkSocket socket = new LavalinkSocket(name, this, serverUri, new Draft_6455(), headers, region);
         socket.connect();
         nodes.add(socket);
     }
