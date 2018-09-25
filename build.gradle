@@ -87,7 +87,7 @@ compileJava {
 }
 
 
-wrapper {
+task wrapper(type: Wrapper) {
     gradleVersion = project.ext.gradleVersion
     //noinspection UnnecessaryQualifiedReference
     distributionType = Wrapper.DistributionType.ALL
