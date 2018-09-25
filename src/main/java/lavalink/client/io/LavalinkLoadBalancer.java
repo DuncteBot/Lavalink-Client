@@ -23,11 +23,12 @@
 package lavalink.client.io;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import lavalink.client.io.jda.JdaLavalink;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Region;
+import net.dv8tion.jda.core.entities.Guild;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("WeakerAccess")
 public class LavalinkLoadBalancer {
@@ -41,13 +42,27 @@ public class LavalinkLoadBalancer {
     }
 
     @NonNull
-    public LavalinkSocket determineBestSocket(long guild) {
+    public LavalinkSocket determineBestSocket(long guildId) {
         LavalinkSocket leastPenalty = null;
         int record = Integer.MAX_VALUE;
 
+        JdaLavalink link = (JdaLavalink) lavalink;
+        JDA jda = link.getJdaFromSnowflake(Long.toUnsignedString(guildId));
+        Guild guild = jda.getGuildById(guildId);
+        Region guildRegion = guild.getRegion();
+
         List<LavalinkSocket> nodes = lavalink.getNodes();
         for (LavalinkSocket socket : nodes) {
-            int total = getPenalties(socket, guild, penaltyProviders).getTotal();
+
+            Optional<Region> optionalRegion = socket.getRegion().getJDARegions().stream()
+                    .filter(r -> r == guildRegion).findFirst();
+
+            if(optionalRegion.isPresent()) {
+                leastPenalty = socket;
+                continue;
+            }
+
+            int total = getPenalties(socket, guildId, penaltyProviders).getTotal();
             if (total < record) {
                 leastPenalty = socket;
                 record = total;

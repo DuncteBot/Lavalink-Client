@@ -53,6 +53,8 @@ public class LavalinkSocket extends ReusableWebSocket {
     private final String name;
     @NonNull
     private final Lavalink lavalink;
+    @NonNull
+    private final LavalinkRegion region;
     @Nullable
     private RemoteStats stats;
     long lastReconnectAttempt = 0;
@@ -61,11 +63,13 @@ public class LavalinkSocket extends ReusableWebSocket {
     private final URI remoteUri;
     private boolean available = false;
 
-    LavalinkSocket(@NonNull String name, @NonNull Lavalink lavalink, @NonNull URI serverUri, Draft protocolDraft, Map<String, String> headers) {
+    LavalinkSocket(@NonNull String name, @NonNull Lavalink lavalink, @NonNull URI serverUri, Draft protocolDraft,
+                   Map<String, String> headers, @NonNull LavalinkRegion region) {
         super(serverUri, protocolDraft, headers, TIMEOUT_MS);
         this.name = name;
         this.lavalink = lavalink;
         this.remoteUri = serverUri;
+        this.region = region;
     }
 
     @Override
@@ -207,6 +211,16 @@ public class LavalinkSocket extends ReusableWebSocket {
     @NonNull
     public String getName() {
         return name;
+    }
+
+    @NonNull
+    public LavalinkRegion getRegion() {
+        return region;
+    }
+
+    @NonNull
+    public Lavalink getLavalink() {
+        return lavalink;
     }
 
     @Override
