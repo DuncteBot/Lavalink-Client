@@ -55,8 +55,8 @@ public class LavalinkLoadBalancer {
         for (LavalinkSocket socket : nodes) {
             int total = getPenalties(socket, guildId, penaltyProviders).getTotal();
 
-            Optional<Region> optionalRegion = socket.getRegion().getJDARegions().stream()
-                    .filter(r -> r == guildRegion).findFirst();
+            Optional<String> optionalRegion = socket.getRegion().getJDARegions().stream()
+                    .filter( (r) -> r.equals(guildRegion.getKey()) ).findFirst();
 
             if(optionalRegion.isPresent()) {
                 leastPenalty = socket;

@@ -4,6 +4,7 @@ import net.dv8tion.jda.core.Region;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static net.dv8tion.jda.core.Region.*;
 
@@ -20,12 +21,12 @@ public enum LavalinkRegion {
      */
     DEFAULT();
 
-    private final List<Region> regions;
+    private final List<String> regions;
     LavalinkRegion(Region... regions) {
-        this.regions = Arrays.asList(regions);
+        this.regions = Arrays.stream(regions).map(Region::getKey).collect(Collectors.toList());
     }
 
-    public List<Region> getJDARegions() {
+    public List<String> getJDARegions() {
         return regions;
     }
 }
