@@ -228,6 +228,7 @@ public class LavalinkSocket extends ReusableWebSocket {
         return "LavalinkSocket{" +
                 "name=" + name +
                 ",remoteUri=" + remoteUri +
+                ",region=" + region +
                 '}';
     }
 }
