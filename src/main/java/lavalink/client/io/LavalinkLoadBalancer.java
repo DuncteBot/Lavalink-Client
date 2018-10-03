@@ -28,7 +28,12 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SuppressWarnings("WeakerAccess")
 public class LavalinkLoadBalancer {
@@ -52,17 +57,22 @@ public class LavalinkLoadBalancer {
         Region guildRegion = guild.getRegion();
 
         List<LavalinkSocket> nodes = lavalink.getNodes();
+
+        Stream<LavalinkSocket> filteredNodes = nodes.stream()
+                .filter(LavalinkSocket::isAvailable)
+                .filter((socket) ->
+                        socket.getRegion().getJDARegions().stream()
+                                .anyMatch((r) ->
+                                        r.equals(guildRegion.getKey())
+                                )
+                );
+
+        if (filteredNodes.count() > 0) {
+            nodes = filteredNodes.collect(Collectors.toList());
+        }
+
         for (LavalinkSocket socket : nodes) {
             int total = getPenalties(socket, guildId, penaltyProviders).getTotal();
-
-            Optional<String> optionalRegion = socket.getRegion().getJDARegions().stream()
-                    .filter( (r) -> r.equals(guildRegion.getKey()) ).findFirst();
-
-            if(optionalRegion.isPresent()) {
-                leastPenalty = socket;
-                record = total;
-                continue;
-            }
 
             if (total < record) {
                 leastPenalty = socket;
