@@ -72,8 +72,6 @@ public class LavalinkLoadBalancer {
             nodes.addAll(filteredNodes);
         }
 
-        System.out.println(nodes);
-
         for (LavalinkSocket socket : nodes) {
             int total = getPenalties(socket, guildId, penaltyProviders).getTotal();
 
