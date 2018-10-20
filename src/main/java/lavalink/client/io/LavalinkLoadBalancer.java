@@ -25,7 +25,6 @@ package lavalink.client.io;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import lavalink.client.io.jda.JdaLavalink;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.Guild;
 
 import java.util.ArrayList;
@@ -33,7 +32,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @SuppressWarnings("WeakerAccess")
 public class LavalinkLoadBalancer {
@@ -56,6 +54,7 @@ public class LavalinkLoadBalancer {
         Guild guild = jda.getGuildById(guildId);
         String guildRegion = guild.getRegionRaw();
 
+        @SuppressWarnings("unchecked")
         List<LavalinkSocket> nodes = lavalink.getNodes();
 
         List<LavalinkSocket> filteredNodes = nodes.stream()
