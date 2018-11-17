@@ -55,7 +55,7 @@ public class LavalinkLoadBalancer {
         String guildRegion = guild.getRegionRaw();
 
         @SuppressWarnings("unchecked")
-        List<LavalinkSocket> nodes = new ArrayList<>(lavalink.getNodes());
+        List<LavalinkSocket> nodes = lavalink.getNodes();
 
         List<LavalinkSocket> filteredNodes = nodes.stream()
                 .filter(LavalinkSocket::isAvailable)
@@ -67,8 +67,7 @@ public class LavalinkLoadBalancer {
                 ).collect(Collectors.toList());
 
         if (!filteredNodes.isEmpty()) {
-            nodes.clear();
-            nodes.addAll(filteredNodes);
+            nodes = filteredNodes;
         }
 
         for (LavalinkSocket socket : nodes) {
