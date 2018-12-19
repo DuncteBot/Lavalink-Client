@@ -29,6 +29,8 @@ public class JdaLavalink extends Lavalink<JdaLink> implements EventListener {
     public JdaLavalink(String userId, int numShards, Function<Integer, JDA> jdaProvider) {
         super(userId, numShards);
         this.jdaProvider = jdaProvider;
+
+        this.loadBalancer = new JdaLavalinkLoadBalancer(this);
     }
 
     @SuppressWarnings("unused")

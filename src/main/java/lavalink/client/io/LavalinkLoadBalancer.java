@@ -31,48 +31,27 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("WeakerAccess")
 public class LavalinkLoadBalancer {
 
-    private Lavalink lavalink;
+    protected Lavalink lavalink;
     //private Map<String, Optional<LavalinkSocket>> socketMap = new ConcurrentHashMap<>();
-    private List<PenaltyProvider> penaltyProviders = new ArrayList<>();
+    protected List<PenaltyProvider> penaltyProviders = new ArrayList<>();
 
-    LavalinkLoadBalancer(Lavalink lavalink) {
+    public LavalinkLoadBalancer(Lavalink lavalink) {
         this.lavalink = lavalink;
     }
 
     @NonNull
-    public LavalinkSocket determineBestSocket(long guildId) {
+    public LavalinkSocket determineBestSocket(long guild) {
         LavalinkSocket leastPenalty = null;
         int record = Integer.MAX_VALUE;
 
-        JdaLavalink link = (JdaLavalink) lavalink;
-        JDA jda = link.getJdaFromSnowflake(Long.toUnsignedString(guildId));
-        Guild guild = jda.getGuildById(guildId);
-        String guildRegion = guild.getRegionRaw();
-
         @SuppressWarnings("unchecked")
         List<LavalinkSocket> nodes = lavalink.getNodes();
-
-        List<LavalinkSocket> filteredNodes = nodes.stream()
-                .filter(LavalinkSocket::isAvailable)
-                .filter((socket) ->
-                        socket.getRegion().getJDARegions().stream()
-                                .anyMatch((r) ->
-                                        r.equalsIgnoreCase(guildRegion)
-                                )
-                ).collect(Collectors.toList());
-
-        if (!filteredNodes.isEmpty()) {
-            nodes = filteredNodes;
-        }
-
         for (LavalinkSocket socket : nodes) {
-            int total = getPenalties(socket, guildId, penaltyProviders).getTotal();
-
+            int total = getPenalties(socket, guild, penaltyProviders).getTotal();
             if (total < record) {
                 leastPenalty = socket;
                 record = total;
@@ -100,7 +79,7 @@ public class LavalinkLoadBalancer {
         Collection<Link> links = lavalink.getLinks();
         links.forEach(link -> {
             if (disconnected.equals(link.getNode(false)))
-                link.changeNode(lavalink.loadBalancer.determineBestSocket(link.getGuildIdLong()));
+                link.changeNode(lavalink.getLoadBalancer().determineBestSocket(link.getGuildIdLong()));
         });
     }
 

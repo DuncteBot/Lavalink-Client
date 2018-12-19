@@ -155,7 +155,7 @@ abstract public class Link {
     @SuppressWarnings("WeakerAccess")
     public LavalinkSocket getNode(boolean selectIfAbsent) {
         if (selectIfAbsent && node == null) {
-            node = lavalink.loadBalancer.determineBestSocket(guild);
+            node = lavalink.getLoadBalancer().determineBestSocket(guild);
             if (player != null) player.onNodeChange();
         }
         return node;

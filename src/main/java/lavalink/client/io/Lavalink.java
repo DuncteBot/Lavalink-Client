@@ -45,7 +45,7 @@ public abstract class Lavalink<T extends Link> {
     private final String userId;
     private final ConcurrentHashMap<String, T> links = new ConcurrentHashMap<>();
     final List<LavalinkSocket> nodes = new CopyOnWriteArrayList<>();
-    final LavalinkLoadBalancer loadBalancer = new LavalinkLoadBalancer(this);
+    public LavalinkLoadBalancer loadBalancer;
 
     private final ScheduledExecutorService reconnectService;
 
@@ -102,6 +102,11 @@ public abstract class Lavalink<T extends Link> {
     @SuppressWarnings("unused")
     @NonNull
     public LavalinkLoadBalancer getLoadBalancer() {
+
+        if (loadBalancer == null) {
+            loadBalancer = new LavalinkLoadBalancer(this);
+        }
+
         return loadBalancer;
     }
 
