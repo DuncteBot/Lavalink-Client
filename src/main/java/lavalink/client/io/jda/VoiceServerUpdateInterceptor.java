@@ -22,9 +22,9 @@
 
 package lavalink.client.io.jda;
 
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.handle.SocketHandler;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.handle.SocketHandler;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ public class VoiceServerUpdateInterceptor extends SocketHandler {
             return idLong;
 
         // Get session
-        Guild guild = getJDA().getGuildMap().get(idLong);
+        Guild guild = getJDA().getGuildCache().getElementById(idLong);
         if (guild == null)
             throw new IllegalArgumentException("Attempted to start audio connection with Guild that doesn't exist! JSON: " + content);
 

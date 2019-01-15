@@ -1,11 +1,11 @@
 package lavalink.client.io.jda;
 
 import lavalink.client.io.Link;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.VoiceChannel;
-import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.handle.VoiceStateUpdateHandler;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.handle.VoiceStateUpdateHandler;
 import org.json.JSONObject;
 
 public class VoiceStateUpdateInterceptor extends VoiceStateUpdateHandler {

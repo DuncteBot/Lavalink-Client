@@ -24,8 +24,8 @@ package lavalink.client.io;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import lavalink.client.io.jda.JdaLavalink;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.ArrayList;
 import java.util.Collection;
