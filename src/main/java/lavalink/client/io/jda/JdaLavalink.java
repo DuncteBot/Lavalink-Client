@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.ReconnectedEvent;
 import net.dv8tion.jda.api.events.channel.voice.VoiceChannelDeleteEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.handle.SocketHandler;
 import org.slf4j.Logger;
@@ -67,11 +68,12 @@ public class JdaLavalink extends Lavalink<JdaLink> implements EventListener {
 
     @Override
     public void onEvent(Event event) {
-        if (event instanceof ReadyEvent) {
-            Map<String, SocketHandler> handlers = ((JDAImpl) event.getJDA()).getClient().getHandlers();
-            handlers.put("VOICE_SERVER_UPDATE", new VoiceServerUpdateInterceptor(this, (JDAImpl) event.getJDA()));
-            handlers.put("VOICE_STATE_UPDATE", new VoiceStateUpdateInterceptor(this, (JDAImpl) event.getJDA()));
-        } else if (event instanceof ReconnectedEvent) {
+//        if (event instanceof ReadyEvent) {
+//            Map<String, SocketHandler> handlers = ((JDAImpl) event.getJDA()).getClient().getHandlers();
+//            handlers.put("VOICE_SERVER_UPDATE", new VoiceServerUpdateInterceptor(this, (JDAImpl) event.getJDA()));
+//            handlers.put("VOICE_STATE_UPDATE", new VoiceStateUpdateInterceptor(this, (JDAImpl) event.getJDA()));
+//        } else
+        if (event instanceof ReconnectedEvent) {
             if (autoReconnect) {
                 getLinksMap().forEach((guildId, link) -> {
                     try {

@@ -82,7 +82,7 @@ public class JdaLink extends Link {
 
     @Override
     protected void removeConnection() {
-        getMainWs().removeAudioConnection(guild);
+//        getMainWs().removeAudioConnection(guild);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class JdaLink extends Link {
         Guild g = getJda().getGuildById(guild);
 
         if (g != null) {
-            getMainWs().queueAudioDisconnect(g);
+            getJda().getDirectAudioController().disconnect(g);
         } else {
             log.warn("Attempted to disconnect, but guild {} was not found", guild);
         }
@@ -100,7 +100,7 @@ public class JdaLink extends Link {
     protected void queueAudioConnect(long channelId) {
         VoiceChannel vc = getJda().getVoiceChannelById(channelId);
         if (vc != null) {
-            getMainWs().queueAudioConnect(vc);
+            getJda().getDirectAudioController().connect(vc);
         } else {
             log.warn("Attempted to connect, but voice channel {} was not found", channelId);
         }
