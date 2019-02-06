@@ -75,14 +75,9 @@ public class JdaLink extends Link {
         return lavalink.getJdaFromSnowflake(String.valueOf(guild));
     }
 
-
-    private WebSocketClient getMainWs() {
-        return ((JDAImpl) getJda()).getClient();
-    }
-
     @Override
     protected void removeConnection() {
-//        getMainWs().removeAudioConnection(guild);
+        // JDA handles this for us
     }
 
     @Override
