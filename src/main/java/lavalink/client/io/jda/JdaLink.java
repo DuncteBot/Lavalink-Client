@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.internal.utils.PermissionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,11 +52,9 @@ public class JdaLink extends Link {
         if (channel.getGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
             final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
             if (!self.isOwner() && !self.hasPermission(Permission.ADMINISTRATOR)) {
-                final long perms = PermissionUtil.getExplicitPermission(channel, self);
-                final long voicePerm = Permission.VOICE_MOVE_OTHERS.getRawValue();
-                if (userLimit > 0                                                   // If there is a userlimit
-                        && userLimit <= channel.getMembers().size()                 // if that userlimit is reached
-                        && (perms & voicePerm) != voicePerm)                        // If we don't have voice move others permissions
+                if (userLimit > 0                                                      // If there is a userlimit
+                        && userLimit <= channel.getMembers().size()                    // if that userlimit is reached
+                        && !self.hasPermission(channel, Permission.VOICE_MOVE_OTHERS)) // If we don't have voice move others permissions
                     throw new InsufficientPermissionException(Permission.VOICE_MOVE_OTHERS, // then throw exception!
                             "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
             }
