@@ -87,7 +87,7 @@ class LavalinkTest {
                 .setToken(getSystemProperty(PROPERTY_TOKEN));
 
         JDA selfId = jdaBuilder.build();
-        lavalink = new JdaLavalink(selfId.getApplicationInfo().submit().get(30, TimeUnit.SECONDS).getId(), 1, integer -> jda);
+        lavalink = new JdaLavalink(selfId.retrieveApplicationInfo().submit().get(30, TimeUnit.SECONDS).getId(), 1, integer -> jda);
         selfId.shutdown();
 
         lavalink.addNode(new URI("ws://localhost:5555"), "youshallnotpass");
