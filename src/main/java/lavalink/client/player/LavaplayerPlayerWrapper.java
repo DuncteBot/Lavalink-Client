@@ -26,6 +26,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventListener;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
+import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame;
 import lavalink.client.player.event.IPlayerEventListener;
 
 public class LavaplayerPlayerWrapper implements IPlayer {
@@ -99,4 +100,7 @@ public class LavaplayerPlayerWrapper implements IPlayer {
         return player.provide();
     }
 
+    public boolean provide(MutableAudioFrame targetFrame) {
+        return player.provide(targetFrame);
+    }
 }
