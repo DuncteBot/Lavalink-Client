@@ -52,22 +52,25 @@ public class LavalinkLoadBalancer {
         JdaLavalink link = (JdaLavalink) lavalink;
         JDA jda = link.getJdaFromSnowflake(Long.toUnsignedString(guildId));
         Guild guild = jda.getGuildById(guildId);
-        String guildRegion = guild.getRegionRaw();
 
         @SuppressWarnings("unchecked")
         List<LavalinkSocket> nodes = lavalink.getNodes();
 
-        List<LavalinkSocket> filteredNodes = nodes.stream()
-                .filter(LavalinkSocket::isAvailable)
-                .filter((socket) ->
-                        socket.getRegion().getJDARegions().stream()
-                                .anyMatch((r) ->
-                                        r.equalsIgnoreCase(guildRegion)
-                                )
-                ).collect(Collectors.toList());
+        if (guild != null) {
+            String guildRegion = guild.getRegionRaw();
 
-        if (!filteredNodes.isEmpty()) {
-            nodes = filteredNodes;
+            List<LavalinkSocket> filteredNodes = nodes.stream()
+                    .filter(LavalinkSocket::isAvailable)
+                    .filter((socket) ->
+                            socket.getRegion().getJDARegions().stream()
+                                    .anyMatch((r) ->
+                                            r.equalsIgnoreCase(guildRegion)
+                                    )
+                    ).collect(Collectors.toList());
+
+            if (!filteredNodes.isEmpty()) {
+                nodes = filteredNodes;
+            }
         }
 
         for (LavalinkSocket socket : nodes) {
