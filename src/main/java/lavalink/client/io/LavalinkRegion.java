@@ -1,12 +1,12 @@
 package lavalink.client.io;
 
-import net.dv8tion.jda.core.Region;
+import net.dv8tion.jda.api.Region;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static net.dv8tion.jda.core.Region.*;
+import static net.dv8tion.jda.api.Region.*;
 
 public enum LavalinkRegion {
 
