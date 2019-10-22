@@ -23,6 +23,7 @@
 package lavalink.client.io;
 
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
@@ -123,8 +124,17 @@ public class LavalinkSocket extends ReusableWebSocket {
 
         switch (json.getString("type")) {
             case "TrackEndEvent":
+                // The player keeps the last track until the event is fired
+                // The event gets to the player first before the bot gets it
+                AudioTrack storedTrack = player.getPlayingTrack();
+                AudioTrack eventTrack = LavalinkUtil.toAudioTrack(json.getString("track"));
+
+                if (storedTrack != null && storedTrack.getUserData() != null) {
+                    eventTrack.setUserData(storedTrack.getUserData());
+                }
+
                 event = new TrackEndEvent(player,
-                        LavalinkUtil.toAudioTrack(json.getString("track")),
+                        storedTrack,
                         AudioTrackEndReason.valueOf(json.getString("reason"))
                 );
                 break;
