@@ -124,17 +124,8 @@ public class LavalinkSocket extends ReusableWebSocket {
 
         switch (json.getString("type")) {
             case "TrackEndEvent":
-                // The player keeps the last track until the event is fired
-                // The event gets to the player first before the bot gets it
-                AudioTrack storedTrack = player.getPlayingTrack();
-                AudioTrack eventTrack = LavalinkUtil.toAudioTrack(json.getString("track"));
-
-                if (storedTrack != null && storedTrack.getUserData() != null) {
-                    eventTrack.setUserData(storedTrack.getUserData());
-                }
-
                 event = new TrackEndEvent(player,
-                        storedTrack,
+                        LavalinkUtil.toAudioTrackWithData(player, json.getString("track")),
                         AudioTrackEndReason.valueOf(json.getString("reason"))
                 );
                 break;
@@ -152,12 +143,12 @@ public class LavalinkSocket extends ReusableWebSocket {
                 }
 
                 event = new TrackExceptionEvent(player,
-                        LavalinkUtil.toAudioTrack(json.getString("track")), ex
+                        LavalinkUtil.toAudioTrackWithData(player, json.getString("track")), ex
                 );
                 break;
             case "TrackStuckEvent":
                 event = new TrackStuckEvent(player,
-                        LavalinkUtil.toAudioTrack(json.getString("track")),
+                        LavalinkUtil.toAudioTrackWithData(player, json.getString("track")),
                         json.getLong("thresholdMs")
                 );
                 break;
