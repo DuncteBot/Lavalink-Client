@@ -33,7 +33,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class Lavalink<T extends Link> {
@@ -42,14 +46,16 @@ public abstract class Lavalink<T extends Link> {
 
     @SuppressWarnings("WeakerAccess")
     protected final int numShards;
-    private final String userId;
+    /** User id may be set at a later time */
+    @Nullable
+    private String userId = null;
     private final ConcurrentHashMap<String, T> links = new ConcurrentHashMap<>();
     final List<LavalinkSocket> nodes = new CopyOnWriteArrayList<>();
     final LavalinkLoadBalancer loadBalancer = new LavalinkLoadBalancer(this);
 
     private final ScheduledExecutorService reconnectService;
 
-    public Lavalink(String userId, int numShards) {
+    public Lavalink(@Nullable String userId, int numShards) {
         this.userId = userId;
         this.numShards = numShards;
 
@@ -59,6 +65,14 @@ public abstract class Lavalink<T extends Link> {
             return thread;
         });
         reconnectService.scheduleWithFixedDelay(new ReconnectTask(this), 0, 500, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Creates a Lavalink instance.
+     * N.B: You must set the user ID before adding a node
+     */
+    public Lavalink(int numShards) {
+        this(null, numShards);
     }
 
     private static final AtomicInteger nodeCounter = new AtomicInteger(0);
@@ -72,6 +86,7 @@ public abstract class Lavalink<T extends Link> {
     }
 
     /**
+     *
      * @param name
      *         A name to identify this node. May show up in metrics and other places.
      * @param serverUri
@@ -80,9 +95,19 @@ public abstract class Lavalink<T extends Link> {
      *         password of the node to be added
      * @param region
      *          The region that this server is in
+     * @throws IllegalStateException if no userId has been set.
+     * @throws IllegalArgumentException if a node with that name already exists.
+     * @see #setUserId(String)
      */
     @SuppressWarnings("WeakerAccess")
     public void addNode(@NonNull String name, @NonNull URI serverUri, @NonNull String password, LavalinkRegion region) {
+        if (userId == null) {
+            throw new IllegalStateException("We need a userId to connect to Lavalink");
+        }
+
+        if (nodes.stream().anyMatch(sock -> sock.getName().equals(name))) {
+            throw new IllegalArgumentException("A node with the name " + name + " already exists.");
+        }
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", password);
         headers.put("Num-Shards", Integer.toString(numShards));
@@ -141,6 +166,17 @@ public abstract class Lavalink<T extends Link> {
     @NonNull
     public List<LavalinkSocket> getNodes() {
         return nodes;
+    }
+
+    /**
+     * The user id of this bot.
+     * @throws IllegalStateException if any nodes are registered.
+     */
+    public void setUserId(@Nullable String userId) {
+        if (!nodes.isEmpty()) {
+            throw new IllegalStateException("Can't set userId if we already have nodes registered!");
+        }
+        this.userId = userId;
     }
 
     public void shutdown() {

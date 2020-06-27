@@ -66,7 +66,7 @@ public abstract class AudioEventAdapterWrapped extends AudioEventAdapter impleme
             onEvent(new com.sedmelluq.discord.lavaplayer.player.event.TrackStuckEvent(player,
                     e.getTrack(),
                     e.getThresholdMs(),
-                    null
+                    new StackTraceElement[0]
             ));
         }
     }
