@@ -63,6 +63,13 @@ abstract public class Link {
         return lavalink;
     }
 
+    public LavalinkRestClient getRestClient() {
+        final LavalinkSocket node = getNode(true);
+        if (node == null) throw new IllegalStateException("No available nodes!");
+
+        return node.getRestClient();
+    }
+
     @SuppressWarnings("unused")
     public void resetPlayer() {
         player = null;
@@ -76,6 +83,11 @@ abstract public class Link {
         return guild;
     }
 
+    /**
+     * @deprecated may cause unexpected reconnects and other strange behavior. Use {@link #destroy()} instead.
+     * Will be removed if we change the lifecycle of this class.
+     */
+    @Deprecated
     public void disconnect() {
         setState(State.DISCONNECTING);
         queueAudioDisconnect();
