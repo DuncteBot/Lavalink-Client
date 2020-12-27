@@ -49,7 +49,6 @@ public abstract class Lavalink<T extends Link> {
     /** User id may be set at a later time */
     @Nullable
     private String userId;
-    private String clientName = "Client-Name";
     private final ConcurrentHashMap<String, T> links = new ConcurrentHashMap<>();
     final List<LavalinkSocket> nodes = new CopyOnWriteArrayList<>();
     final LavalinkLoadBalancer loadBalancer = new LavalinkLoadBalancer(this);
@@ -110,11 +109,12 @@ public abstract class Lavalink<T extends Link> {
         if (nodes.stream().anyMatch(sock -> sock.getName().equals(name))) {
             throw new IllegalArgumentException("A node with the name " + name + " already exists.");
         }
+
         HashMap<String, String> headers = new HashMap<>();
         headers.put("Authorization", password);
         headers.put("Num-Shards", Integer.toString(numShards));
         headers.put("User-Id", userId);
-        headers.put("Client-Name", clientName);
+        headers.put("Client-Name", "Lavalink-Client");
 
         LavalinkSocket socket = new LavalinkSocket(name, this, serverUri, new Draft_6455(), headers, region);
         socket.connect();
@@ -183,25 +183,13 @@ public abstract class Lavalink<T extends Link> {
         this.userId = userId;
     }
 
-    /**
-     * Sets the client name for your bot to use
-     * @throws IllegalStateException if any nodes are registered.
-     */
-    @SuppressWarnings("unused")
-    public void setClientName(String clientName) {
-        if (!nodes.isEmpty()) {
-            throw new IllegalStateException("Can't set clientName if we already have nodes registered!");
-        }
-        this.clientName = clientName;
-    }
-
     public void shutdown() {
         reconnectService.shutdown();
         nodes.forEach(ReusableWebSocket::close);
     }
 
     void removeDestroyedLink(Link link) {
-        log.info("Destroyed link for guild " + link.getGuildId());
+        log.debug("Destroyed link for guild " + link.getGuildId());
         links.remove(link.getGuildId());
     }
 
