@@ -45,10 +45,12 @@ public class LavalinkPlayer implements IPlayer {
 
     private AudioTrack track = null;
     private boolean paused = false;
+    private int volume = 100;
     private long updateTime = -1;
     private long position = -1;
     /** Lazily initialized */
     private Filters filters = null;
+    private boolean connected = false;
 
     private final Link link;
     private List<IPlayerEventListener> listeners = new CopyOnWriteArrayList<>();
@@ -98,6 +100,7 @@ public class LavalinkPlayer implements IPlayer {
                 json.put("endTime", trackData.endPos);
             }
             json.put("pause", paused);
+            json.put("volume", volume);
             //noinspection ConstantConditions
             link.getNode(true).send(json.toString());
 
@@ -178,16 +181,20 @@ public class LavalinkPlayer implements IPlayer {
      */
     @Override
     public void setVolume(int volume) {
-        if (filters == null && volume == 100) return;
-        getFilters().setVolume(volume / 100).commit();
+        volume = Math.min(1000, Math.max(0, volume)); // Lavaplayer bounds
+        this.volume = volume;
+
+        LavalinkSocket node = link.getNode(false);
+        if (node == null) return;
+
+        JSONObject json = new JSONObject();
+        json.put("op", "volume");
+        json.put("guildId", link.getGuildId());
+        json.put("volume", volume);
+        node.send(json.toString());
     }
 
-    /**
-     * @deprecated Please use the new filters system get specify volume
-     * @see LavalinkPlayer#getFilters()
-     */
     @Override
-    @Deprecated
     public int getVolume() {
         return (int) (getFilters().getVolume() * 100);
     }
@@ -207,6 +214,7 @@ public class LavalinkPlayer implements IPlayer {
     public void provideState(JSONObject json) {
         updateTime = json.getLong("time");
         position = json.optLong("position", 0);
+        connected = json.optBoolean("connected", true);
     }
 
     @Override
@@ -291,7 +299,34 @@ public class LavalinkPlayer implements IPlayer {
             json.put("vibrato", obj);
         }
 
+        Rotation rotation = filters.getRotation();
+        if (rotation != null) {
+            JSONObject obj = new JSONObject();
+            obj.put("rotationHz", rotation.getFrequency());
+            json.put("rotation", obj);
+        }
+
+        Distortion distortion = filters.getDistortion();
+        if (distortion != null) {
+            JSONObject obj = new JSONObject();
+            obj.put("sinOffset", distortion.getSinOffset());
+            obj.put("sinScale", distortion.getSinScale());
+            obj.put("cosOffset", distortion.getCosOffset());
+            obj.put("cosScale", distortion.getCosScale());
+            obj.put("tanOffset", distortion.getTanOffset());
+            obj.put("tanScale", distortion.getTanScale());
+            obj.put("offset", distortion.getOffset());
+            obj.put("scale", distortion.getScale());
+            json.put("distortion", obj);
+        }
+
         node.send(json.toString());
     }
 
+    /**
+     * @return Whether or not the Lavalink player is connected to the gateway
+     */
+    public boolean isConnected() {
+        return connected;
+    }
 }
