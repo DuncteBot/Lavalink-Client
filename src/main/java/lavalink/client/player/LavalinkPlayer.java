@@ -176,7 +176,7 @@ public class LavalinkPlayer implements IPlayer {
     }
 
     /**
-     * @deprecated Please use the new filters system to specify volume
+     * not-@deprecated Please use the new filters system to specify volume (volume op still works)
      * @see LavalinkPlayer#getFilters()
      */
     @Override
