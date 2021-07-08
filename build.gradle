@@ -29,8 +29,8 @@ version = "${versionFromTag()}"
 description = 'JDA based client for the Lavalink-Server'
 
 
-sourceCompatibility = 16
-targetCompatibility = 16
+sourceCompatibility = JavaVersion.VERSION_16
+targetCompatibility = JavaVersion.VERSION_16
 
 
 repositories {
